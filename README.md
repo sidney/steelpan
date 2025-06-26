@@ -5,7 +5,7 @@ The initial Claude prompt was this:
 
 How can an app for android minimize tap to tone latency?
 
-With the anser:
+With the answer:
 
 To minimize tap-to-tone latency in Android audio apps, here are the key strategies:
 Use Low-Latency Audio APIs:

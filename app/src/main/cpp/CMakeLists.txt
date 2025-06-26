@@ -10,10 +10,10 @@ add_library(steelpan SHARED steelpan.cpp)
 
 # Link libraries
 target_link_libraries(steelpan
-    ${log-lib}
-    ${aaudio-lib})
+        ${log-lib}
+        ${aaudio-lib})
 
 # Set C++ standard
 set_target_properties(steelpan PROPERTIES
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED ON)
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON)
