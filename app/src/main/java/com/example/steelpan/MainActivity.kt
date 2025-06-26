@@ -180,19 +180,35 @@ class SteelpanView(context: Context, attrs: AttributeSet? = null) : View(context
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (event.action == MotionEvent.ACTION_DOWN) {
-            val x = event.x
-            val y = event.y
+        val action = event.actionMasked // Use actionMasked for multi-touch
+        val pointerIndex = event.actionIndex
 
-            for (note in notes) {
-                val distance = sqrt((x - note.x).pow(2) + (y - note.y).pow(2))
-                if (distance <= note.radius) {
-                    playNote(note.note)
-                    return true
-                }
+        when (action) {
+            MotionEvent.ACTION_DOWN,           // First finger down
+            MotionEvent.ACTION_POINTER_DOWN -> { // Additional fingers down
+                val x = event.getX(pointerIndex)
+                val y = event.getY(pointerIndex)
+                handleTouch(x, y)
+                return true
             }
+            // Optional: Handle finger up events if you want notes to stop
+            // MotionEvent.ACTION_UP,
+            // MotionEvent.ACTION_POINTER_UP -> {
+            //     // Handle note release if desired
+            //     return true
+            // }
         }
         return super.onTouchEvent(event)
+    }
+
+    private fun handleTouch(x: Float, y: Float) {
+        for (note in notes) {
+            val distance = sqrt((x - note.x).pow(2) + (y - note.y).pow(2))
+            if (distance <= note.radius) {
+                playNote(note.note)
+                break // Exit after finding the first matching note
+            }
+        }
     }
 
     private fun playNote(note: String) {
