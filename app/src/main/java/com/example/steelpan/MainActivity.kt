@@ -1,16 +1,15 @@
-// MainActivity.kt
 package com.example.steelpan
 
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.*
-import android.media.AudioAttributes
 import android.media.AudioManager
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -27,6 +26,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Keep screen on and set to landscape
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        
+        // Set audio mode for low latency
+        val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
         
         // Initialize native audio engine first
         initializeAudio()

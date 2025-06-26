@@ -4,6 +4,8 @@
 #include <cmath>
 #include <memory>
 #include <atomic>
+#include <thread>
+#include <chrono>
 
 #define LOG_TAG "SteelpanNative"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
@@ -21,11 +23,14 @@ public:
     bool start() {
         AAudioStreamBuilder* builder = nullptr;
         aaudio_result_t result = AAudio_createStreamBuilder(&builder);
-        if (result != AAUDIO_OK) return false;
+        if (result != AAUDIO_OK) {
+            LOGI("Failed to create stream builder: %s", AAudio_convertResultToText(result));
+            return false;
+        }
         
         AAudioStreamBuilder_setDirection(builder, AAUDIO_DIRECTION_OUTPUT);
         AAudioStreamBuilder_setSharingMode(builder, AAUDIO_SHARING_MODE_EXCLUSIVE);
-        AAudioStreamBuilder_setSampleRate(builder, (int32_t)sampleRate);
+        AAudioStreamBuilder_setSampleRate(builder, static_cast<int32_t>(sampleRate));
         AAudioStreamBuilder_setChannelCount(builder, kChannelCount);
         AAudioStreamBuilder_setFormat(builder, AAUDIO_FORMAT_PCM_FLOAT);
         AAudioStreamBuilder_setPerformanceMode(builder, AAUDIO_PERFORMANCE_MODE_LOW_LATENCY);
@@ -34,12 +39,22 @@ public:
         result = AAudioStreamBuilder_openStream(builder, &stream);
         AAudioStreamBuilder_delete(builder);
         
-        if (result != AAUDIO_OK) return false;
+        if (result != AAUDIO_OK) {
+            LOGI("Failed to open stream: %s", AAudio_convertResultToText(result));
+            return false;
+        }
         
-        sampleRate = AAudioStream_getSampleRate(stream);
+        sampleRate = static_cast<float>(AAudioStream_getSampleRate(stream));
+        LOGI("Stream opened with sample rate: %.0f", sampleRate);
+        
         result = AAudioStream_requestStart(stream);
+        if (result != AAUDIO_OK) {
+            LOGI("Failed to start stream: %s", AAudio_convertResultToText(result));
+            return false;
+        }
         
-        return result == AAUDIO_OK;
+        LOGI("Audio engine started successfully");
+        return true;
     }
     
     void stop() {
@@ -47,20 +62,22 @@ public:
             AAudioStream_requestStop(stream);
             AAudioStream_close(stream);
             stream = nullptr;
+            LOGI("Audio engine stopped");
         }
     }
     
     void playNote(float frequency) {
         currentFreq.store(frequency);
-        amplitude.store(0.3f); // Start with amplitude
+        amplitude.store(0.3f);
         
-        // Fade out after 2 seconds
+        // Fade out after a short duration
         std::thread([this]() {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             for (int i = 0; i < 100; ++i) {
                 float currentAmp = amplitude.load();
                 amplitude.store(currentAmp * 0.95f);
                 std::this_thread::sleep_for(std::chrono::milliseconds(20));
+                if (currentAmp < 0.001f) break;
             }
         }).detach();
     }
@@ -108,9 +125,9 @@ private:
             audioData[i] = sample;
             
             // Update phase
-            phase += 2.0f * M_PI * freq / sampleRate;
-            if (phase >= 2.0f * M_PI) {
-                phase -= 2.0f * M_PI;
+            phase += 2.0f * static_cast<float>(M_PI) * freq / sampleRate;
+            if (phase >= 2.0f * static_cast<float>(M_PI)) {
+                phase -= 2.0f * static_cast<float>(M_PI);
             }
         }
         
