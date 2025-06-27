@@ -6,8 +6,6 @@ import android.content.pm.PackageManager
 import android.graphics.*
 import android.media.AudioManager
 import android.os.Bundle
-import android.util.AttributeSet
-import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.*
@@ -15,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import kotlin.math.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var steelpanView: SteelpanView
