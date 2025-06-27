@@ -22,20 +22,39 @@ class SteelpanView(context: Context, private val configManager: ConfigurationMan
     private var leftDrumBounds = RectF()
     private var rightDrumBounds = RectF()
 
-    // Available notes for configuration
+    // Extended available notes from A1 through G5 with both sharps and flats
     private val availableNotes = listOf(
-        "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3",
-        "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4",
-        "C5"
+        // Octave 1
+        "A1", "A#1", "Bb1", "B1",
+        // Octave 2
+        "C2", "C#2", "Db2", "D2", "D#2", "Eb2", "E2", "F2", "F#2", "Gb2", "G2", "G#2", "Ab2", "A2", "A#2", "Bb2", "B2",
+        // Octave 3
+        "C3", "C#3", "Db3", "D3", "D#3", "Eb3", "E3", "F3", "F#3", "Gb3", "G3", "G#3", "Ab3", "A3", "A#3", "Bb3", "B3",
+        // Octave 4
+        "C4", "C#4", "Db4", "D4", "D#4", "Eb4", "E4", "F4", "F#4", "Gb4", "G4", "G#4", "Ab4", "A4", "A#4", "Bb4", "B4",
+        // Octave 5
+        "C5", "C#5", "Db5", "D5", "D#5", "Eb5", "E5", "F5", "F#5", "Gb5", "G5"
     )
 
-    // Note frequencies (Hz) - extended range
+    // Extended note frequencies (Hz) from A1 through G5 with both sharps and flats
     private val noteFrequencies = mapOf(
-        "C3" to 130.81f, "C#3" to 138.59f, "D3" to 146.83f, "D#3" to 155.56f, "E3" to 164.81f,
-        "F3" to 174.61f, "F#3" to 185.00f, "G3" to 196.00f, "G#3" to 207.65f, "A3" to 220.00f,
-        "A#3" to 233.08f, "B3" to 246.94f, "C4" to 261.63f, "C#4" to 277.18f, "D4" to 293.66f,
-        "D#4" to 311.13f, "E4" to 329.63f, "F4" to 349.23f, "F#4" to 369.99f, "G4" to 392.00f,
-        "G#4" to 415.30f, "A4" to 440.00f, "A#4" to 466.16f, "B4" to 493.88f, "C5" to 523.25f
+        // Octave 1
+        "A1" to 55.00f, "A#1" to 58.27f, "Bb1" to 58.27f, "B1" to 61.74f,
+        // Octave 2
+        "C2" to 65.41f, "C#2" to 69.30f, "Db2" to 69.30f, "D2" to 73.42f, "D#2" to 77.78f, "Eb2" to 77.78f,
+        "E2" to 82.41f, "F2" to 87.31f, "F#2" to 92.50f, "Gb2" to 92.50f, "G2" to 98.00f, "G#2" to 103.83f, "Ab2" to 103.83f,
+        "A2" to 110.00f, "A#2" to 116.54f, "Bb2" to 116.54f, "B2" to 123.47f,
+        // Octave 3
+        "C3" to 130.81f, "C#3" to 138.59f, "Db3" to 138.59f, "D3" to 146.83f, "D#3" to 155.56f, "Eb3" to 155.56f,
+        "E3" to 164.81f, "F3" to 174.61f, "F#3" to 185.00f, "Gb3" to 185.00f, "G3" to 196.00f, "G#3" to 207.65f, "Ab3" to 207.65f,
+        "A3" to 220.00f, "A#3" to 233.08f, "Bb3" to 233.08f, "B3" to 246.94f,
+        // Octave 4
+        "C4" to 261.63f, "C#4" to 277.18f, "Db4" to 277.18f, "D4" to 293.66f, "D#4" to 311.13f, "Eb4" to 311.13f,
+        "E4" to 329.63f, "F4" to 349.23f, "F#4" to 369.99f, "Gb4" to 369.99f, "G4" to 392.00f, "G#4" to 415.30f, "Ab4" to 415.30f,
+        "A4" to 440.00f, "A#4" to 466.16f, "Bb4" to 466.16f, "B4" to 493.88f,
+        // Octave 5
+        "C5" to 523.25f, "C#5" to 554.37f, "Db5" to 554.37f, "D5" to 587.33f, "D#5" to 622.25f, "Eb5" to 622.25f,
+        "E5" to 659.25f, "F5" to 698.46f, "F#5" to 739.99f, "Gb5" to 739.99f, "G5" to 783.99f
     )
 
     init {
@@ -163,7 +182,7 @@ class SteelpanView(context: Context, private val configManager: ConfigurationMan
             canvas.drawCircle(note.x, note.y, note.radius, paint)
 
             // Draw note text
-            val textSize = if (note.radius < 50) 24f else 32f
+            val textSize = if (note.radius < 50) 20f else 28f // Slightly smaller text to fit longer note names
             textPaint.textSize = textSize
             canvas.drawText(note.note, note.x, note.y + textSize/3, textPaint)
         }
@@ -176,7 +195,7 @@ class SteelpanView(context: Context, private val configManager: ConfigurationMan
             paint.color = Color.RED
             canvas.drawCircle(note.x, note.y, note.radius, paint)
 
-            val textSize = if (note.radius < 50) 24f else 32f
+            val textSize = if (note.radius < 50) 20f else 28f
             textPaint.textSize = textSize
             textPaint.color = Color.RED
             canvas.drawText(note.note, note.x, note.y + textSize/3, textPaint)
